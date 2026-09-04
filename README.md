@@ -26,6 +26,6 @@
 ## 🧰环境依赖
 Python 3.9+, PyTorch 2.0+
 ```bash
-pip install -r requirements.txtd
+pip install -r requirements.txt
 git commit -m "https://huggingface.co/LilaSin/radar-cnn-lstm-nowcasting"
 git push
