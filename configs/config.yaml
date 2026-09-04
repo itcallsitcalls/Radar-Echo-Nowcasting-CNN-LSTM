@@ -1,0 +1,53 @@
+# ===================== 雷达回波外推 CNN‑LSTM 训练配置 =====================
+# 硬件配置
+hardware:
+  device: "cuda"
+  num_workers: 4
+  pin_memory: true
+  use_amp: true                # 混合精度AMP
+  grad_clip_norm: 1.0          # 梯度裁剪
+
+# 数据集配置
+dataset:
+  csv_path: "./dataset/sample_list.csv"
+  data_root: "./dataset"
+  image_size: 256
+  in_frames: 10                # 输入10帧
+  out_frames: 10               # 预测输出10帧
+  train_val_split: 0.8
+  horizontal_flip_prob: 0.5
+  use_random_rotate: false     # 报告：旋转会破坏回波物理规律，关闭
+  drop_last: true
+
+# 模型参数
+model:
+  in_channels: 1
+  encoder_channels: [64, 128, 256]
+  hidden_dim: 512
+  lstm_num_layers: 1
+
+# 损失函数参数
+loss:
+  weighted_mse_alpha: 5.0      # 加权MSE权重系数 α=5
+  ssim_lambda: 0.1             # SSIM损失 λ=0.1
+
+# 训练超参数
+train:
+  epochs_max: 100
+  batch_size: 4                # micro‑batch
+  grad_accum_steps: 4          # 梯度累积；有效批次 =4*4=16
+  lr_base: 0.001               # 初始学习率1e‑3
+  weight_decay: 1.0e-5
+  warmup_epochs: 5             # 学习率预热5轮
+  early_stop_patience: 10      # 早停：连续10轮验证不下降停止
+
+# 保存与日志
+save:
+  checkpoint_interval: 5       # 每5个epoch保存checkpoint
+  checkpoint_dir: "./checkpoints"
+  log_dir: "./logs"
+  output_dir: "./outputs"
+
+# 评估阈值（多阈值CSI）
+metrics:
+  csi_thresholds: [0.1, 0.15, 0.184, 0.2, 0.25, 0.3]
